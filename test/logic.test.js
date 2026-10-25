@@ -81,3 +81,12 @@ test('LLM is off unless configured; JSON parsing is forgiving', () => {
   assert.equal(llm.config({}, 'oidc-token').provider.includes('gateway'), true);
   assert.deepEqual(llm.parseJSON('```json\n{"a":1}\n```'), { a: 1 });
 });
+
+test('affinity floor drops weak secondary-lane picks but never the primary lane', () => {
+  const pool = [ent('p1', 0.98, 0.5), ent('p2', 0.93, 0.5), ent('p3', 0.896, 0.5), ent('p4', 0.8, 0.5)];
+  assert.deepEqual(C.affinityFloor(pool).map(e => e.id), ['p1', 'p2']);
+  const radar = { artist: [{ tag: 't', label: 'Jazz', score: 0.9, entities: [ent('a1', 0.85, 0.5), ent('a2', 0.84, 0.6)] }],
+    podcast: [{ tag: 'u', label: 'Arts', score: 0.8, entities: [ent('w1', 0.89, 0.5)] }] };
+  const cal = C.buildCalendar({ venue: { name: 'V' }, lanes: ['artist', 'podcast'], radar, nights: ['Tue'], weeks: 2, from: new Date(Date.UTC(2026, 9, 22)) });
+  assert.equal(cal.length, 2); assert.ok(cal.every(e => e.lane === 'artist'), 'weak podcast excluded, primary lane kept as is');
+});

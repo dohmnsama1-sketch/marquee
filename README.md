@@ -7,7 +7,7 @@
 **The AI programming director for independent venues.**
 Your crowd already told the world what they love. Marquee turns it into a sold-out month.
 
-[![Tests](https://img.shields.io/badge/tests-30%20passing-2dd4bf.svg)](test/)
+[![Tests](https://img.shields.io/badge/tests-31%20passing-2dd4bf.svg)](test/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-ff5c8a.svg)](LICENSE)
 ![Node ≥18](https://img.shields.io/badge/node-%E2%89%A518-ffb347.svg)
 ![Zero dependencies](https://img.shields.io/badge/dependencies-0-7c6cff.svg)
@@ -65,7 +65,7 @@ Marquee is an agent with an explicit loop, streamed live to the UI so you can wa
    - `taste_twins`: same room type, `diversify.by=properties.geocode.city`;
    - `flyer_zones`: `urn:heatmap` (locality boundaries and geohash cells);
    - `brand_collabs`, `gut_check` (`/v2/tags` lookup, then percentile vs. the radar).
-4. **Compose**: interleave the strongest genres into dated nights, alternate hidden gems with crowd favourites, and slot a bridge pick every third night.
+4. **Compose**: interleave the strongest genres into dated nights, alternate hidden gems with crowd favourites, and slot a bridge pick every third night. Secondary formats must clear an affinity floor (≥ 0.90 and within 0.06 of the lane's best), so weak matches never take a night.
 5. **Critique & explain**: a critic checks every night is anchored on an entity returned by Qloo for this crowd, with no repeats and enough format variety. The UI shows the result (e.g. *100% grounded in Qloo*). Then every night gets its evidence, reasons and draw index, and every Qloo call is logged for the provenance table.
 
 **Never ungrounded.** Some places aren't valid signals for some entity types in Qloo's index; the API then ignores the signal and returns results without an affinity.
@@ -107,7 +107,7 @@ Then ask your agent: *"Plan next month for Smalls Jazz Club in New York and gut-
 git clone https://github.com/dohmnsama1-sketch/marquee && cd marquee
 cp .env.example .env          # add your QLOO_API_KEY (and optionally an LLM)
 npm start                     # http://localhost:8787
-npm test                      # 30 tests, no network, no key needed
+npm test                      # 31 tests, no network, no key needed
 ```
 
 No key? `npm start` still runs on clearly labelled fictional **sample data**, so you can explore the UI.

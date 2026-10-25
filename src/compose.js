@@ -20,6 +20,15 @@ function labelPool(pool) {
   });
 }
 
+// Quality floor for the secondary lanes (screenings, talks, book clubs...): drop weak matches so a stray low-affinity title never takes a night.
+// A candidate must clear an absolute floor AND sit close to the best affinity in its lane. The primary lane is never filtered.
+const MIN_AFFINITY = 0.90, BAND = 0.06;
+function affinityFloor(pool) {
+  const best = Math.max(0, ...pool.map(e => e.affinity || 0));
+  const floor = Math.max(MIN_AFFINITY, best - BAND);
+  return pool.filter(e => e.affinity == null || e.affinity >= floor);
+}
+
 // Bookability: a small room can actually book a niche act; for global stars Marquee proposes a tribute / listening night.
 function bookability(e) {
   if (e.popularity == null) return 'book';
@@ -77,7 +86,7 @@ function buildCalendar({ venue, lanes, radar, bridges = [], nights = ['Tue', 'Th
     const pool = []; const seen = new Set();
     // interleave the top genres so the month isn't one genre
     for (let i = 0; i < 8; i++) for (const g of genres) { const e = g.entities[i]; if (e && !seen.has(e.id)) { seen.add(e.id); pool.push({ ...e, genre: g.label, genreTag: g.tag }); } }
-    pools[lane] = labelPool(pool);
+    pools[lane] = labelPool(lane === lanes[0] ? pool : affinityFloor(pool));
   }
   const order = []; lanes.forEach((l, i) => { order.push(l); if (i === 0) order.push(l); }); // primary lane twice per cycle
   const used = new Set(); const events = []; let gemTurn = false; let k = 0;
@@ -142,4 +151,4 @@ function personas({ dna = [], demographics }) {
   return { headline: [age ? `Peak age ${age}` : null, gender].filter(Boolean).join(' · '), vibe: vibe.length ? vibe : other.slice(0, 4), food };
 }
 
-module.exports = { buildCalendar, labelPool, bookability, titleFor, pitches, critique, personas, nextDates, promoTemplate };
+module.exports = { buildCalendar, affinityFloor, labelPool, bookability, titleFor, pitches, critique, personas, nextDates, promoTemplate };
